@@ -94,6 +94,26 @@
         document.body.className = name + 'Screen';
       };
 
+      // updated: now using dynamic latching, meaning that any value
+      // [-1, 1] can be sent instead of a finite set of values
+      var latchDegrees = 3;
+      var maxDegrees = 30;
+      var latch = latchDegrees / maxDegrees;
+
+      function bounded(angle, max) {
+        return Math.min(Math.max(angle, -max), max);
+      }
+
+      function latchCheck(measurement, metric, fn) {
+        // normalize to [-1, 1]
+        measurement = bounded(measurement, maxDegrees) / maxDegrees;
+
+        if (Math.abs(measurement - shark[metric]) >= latch) {
+          shark[metric] = measurement;
+          socket.emit(fn, measurement);
+        }
+      }
+
       // so hack...
       var formClicked = false;
 
@@ -154,29 +174,6 @@
         e.preventDefault();
         return false;
       }, false);
-
-      // updated: now using dynamic latching, meaning that any value
-      // [-1, 1] can be sent instead of a finite set of values
-      var latchDegrees = 3;
-      var maxDegrees = 30;
-      var latch = latchDegrees / maxDegrees;
-
-      function bounded(angle, max) {
-        return Math.min(Math.max(angle, -max), max);
-      }
-
-      function latchCheck(measurement, metric, fn) {
-        // normalize to [-1, 1]
-        measurement = bounded(measurement, maxDegrees) / maxDegrees;
-
-        if (Math.abs(measurement - shark[metric]) >= latch) {
-          shark[metric] = measurement;
-          socket.emit(fn, measurement);
-          p = document.createElement('p');
-          p.textContent = measurement;
-          document.body.appendChild(p);
-        }
-      }
 
     })(this);
   </script>

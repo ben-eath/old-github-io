@@ -13,23 +13,21 @@
 var socket = io.connect('http://10.0.1.169:3001');
 var form = document.getElementById('joinRoom');
 var input = document.getElementById('room-id');
-
-	
-	socket.on('connection', function(socket) {
-		socket.on('updateScore', function() {
-			// do shit
-		});
-    form.addEventListener("submit", function(e) {
-      console.log(input.value);
-      socket.emit('joinRoom', 'controller', input.value);
-      socket.on('notifyRoomID', function(id) {
-        console.log("connected");
-      });
-    e.preventDefault();
-    return false;
-  });
-
+socket.on('updateScore', function() {
+		// do shit
 });
+form.addEventListener("submit", function(e) {
+  console.log(input.value);
+  //socket.emit('joinRoom', 'controller', input.value);
+  /*
+  socket.on('notifyRoomID', function(id) {
+    console.log("connected");
+  });
+  */
+  e.preventDefault();
+  return false;
+});
+
 
 var shark_velocity = {'direction':0, 'depth':0};
 

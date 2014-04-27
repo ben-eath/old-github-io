@@ -12,24 +12,21 @@
 			// do shit
 		});
 	});
-
+	socket.emit('joinRoom', 'controller', 'id8n');
+	socket.emit('setDepth', '1.0');
 var shark_velocity = {'direction':0, 'depth':0};
 
 var last_direction = 0;
 var last_depth = 0;
 
-var ws = new WebSocket("ws://10.0.3.138:3001");
 var sendDepth = function() {
 	socket.emit('setDepth', Math.round(shark_velocity.depth));
- // ws.send(JSON.stringify({'fn': 'setDepth', 'args':{'depth':Math.round(shark_velocity.depth)}}));
 };
 var sendDirection = function() {
 	socket.emit('setDirection', Math.round(shark_velocity.direction));
-//  ws.send(JSON.stringify({'fn': 'setDirection', 'args':{'direction':Math.round(shark_velocity.direction)}}));
 };
 
 
-ws.onopen = function (event) {
   window.addEventListener('deviceorientation', function(eventData) {
     // gamma is the left-to-right tilt in degrees, where right is positive
     shark_velocity.depth = eventData.gamma/180;
@@ -56,7 +53,6 @@ ws.onopen = function (event) {
 
   }, false);
 
-};
 
 if (window.DeviceOrientationEvent) {
     console.log("DeviceOrientation is supported");

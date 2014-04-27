@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sharky Shark Controller</title>
+  <style>
+    input {
+      text-transform: uppercase;
+    }
+    .screen {
+      position: fixed;
+      top: 0; bottom: 0; left: 0; right: 0;
+      display: none;
+    }
+    .lobbyScreen #lobbyScreen,
+    .waitScreen #waitScreen,
+    .playScreen #playScreen {
+      display: block;
+    }
+    .waiting #button {
+      /* load animation, if we have time */
+    }
+  </style>
+</head>
+<body class="lobbyScreen">
+
+  <div class="screen" id="lobbyScreen">
+    <form id="joinRoom">
+      <label for="playerName"></label>
+      <input id="playerName" type="text" name="playerName">
+      <input id="roomId" type="text" name="roomId">
+      <input id="button" type="submit" name="submit">
+    </form>
+  </div>
+
+  <div class="screen" id="waitScreen">
+    <h1>Please wait</h1>
+    <p id="waitName"></p>
+    <p id="waitScore"></p>
+  </div>
+
+  <div class="screen" id="playScreen">
+    <p id="playName"></p>
+    <p id="playScore"></p>
+  </div>
+
+  <script src="socket.io.js"></script>
+
+  <script>
+    // This entire thing seriously needs some (refactoring)
+    ;(function(global) {
+      var socket = io.connect('http://10.0.1.169:9000');
+      navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
+
+      var vibratePhone = function(duration) {
+        if (navigator.vibrate) {
+          if(typeof duration !== 'number') {
+            duration = 600;
+          }
+          navigator.vibrate(duration);
+        }
+      };
+
+      // DOM elements
+      var form = document.getElementById('joinRoom');
+      var playerName = document.getElementById('playerName');
+      var roomId = document.getElementById('roomId');
+      var scores = [
+        document.getElementById('waitScore'),
+        document.getElementById('playScore')
+      ];
+
+      var shark = {
+        direction: 0,
+        depth: 0,
+        score: 0
+      };
+
+      var addClass = (function() {
+        var body = document.body;
+        if (body.classList) {
+          return function(el, className) {
+            el.classList.add(className);
+          };
+        } else {
+          return function(el, className) {
+            el.className += ' ' + className;
+          };
+        }
+      })();
+
+      var changeScreen = function(name) {
+        document.body.className = name + 'Screen';
+      };
+
+      // so hack...
+      var formClicked = false;
+
+      form.addEventListener("submit", function(e) {
+        var nameValue = playerName.value;
+        var idValue = roomId.value;
+
+        if (nameValue && idValue) {
+          socket.emit('joinRoom', 'controller', nameValue, idValue);
+          addClass(document.body, 'waiting');
+
+          // so hack...
+          if (!formClicked) {
+            formClicked = true;
+
+            socket.on('verifyRoom', function(roomExists) {
+              if(roomExists) {
+                changeScreen('wait');
+
+                socket.on('updateScore', function(score) {
+                  shark.score = score;
+                  scores.forEach(function(el) {
+                    el.textContent = score;
+                  });
+                  vibratePhone();
+                });
+
+                socket.on('startRound', function() {
+                  changeScreen('play');
+                  vibratePhone();
+                });
+
+                socket.on('finishRound', function() {
+                  changeScreen('wait');
+                  vibratePhone();
+                });
+
+                // Add other socket listeners here (blood, etc)
+
+                global.addEventListener('deviceorientation', function(eventData) {
+                  // gamma: left-to-right tilt, right is positive;
+                  // handles depth, -90deg to 90deg
+                  var gamma = eventData.gamma;
+
+                  // beta: front-to-back tilt, front is positive;
+                  // handles direction, -90deg to 90deg
+                  var beta = eventData.beta;
+
+                  latchCheck(gamma, 'depth', 'setDepth');
+                  latchCheck(beta, 'direction', 'setDirection');
+
+                }, false);
+              }
+            });
+          }
+        }
+
+        e.preventDefault();
+        return false;
+      }, false);
+
+      // updated: now using dynamic latching, meaning that any value
+      // [-1, 1] can be sent instead of a finite set of values
+      var latchDegrees = 3;
+      var maxDegrees = 30;
+      var latch = latchDegrees / maxDegrees;
+
+      function bounded(angle, max) {
+        return Math.min(Math.max(angle, -max), max);
+      }
+
+      function latchCheck(measurement, metric, fn) {
+        // normalize to [-1, 1]
+        measurement = bounded(measurement, maxDegrees) / maxDegrees;
+
+        if (Math.abs(measurement - shark[metric]) >= latch) {
+          shark[metric] = measurement;
+          socket.emit(fn, measurement);
+          p = document.createElement('p');
+          p.textContent = measurement;
+          document.body.appendChild(p);
+        }
+      }
+
+    })(this);
+  </script>
+
+</body>
+</html>

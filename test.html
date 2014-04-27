@@ -1,11 +1,18 @@
 <html>
 <head>
+	<script src='/node_modules/socket.io/socket.io.js/'></script>
 </head>
 <body>
   <div id="vel"> </div>
 <script>
 
-    
+	var socket = io.connect('http://10.0.1.169:3001');
+	socket.on('connection', function(socket) {
+		socket.on('updateScore', function() {
+			// do shit
+		});
+	});
+
 var shark_velocity = {'direction':0, 'depth':0};
 
 var last_direction = 0;
@@ -13,10 +20,12 @@ var last_depth = 0;
 
 var ws = new WebSocket("ws://10.0.3.138:3001");
 var sendDepth = function() {
-  ws.send(JSON.stringify({'fn': 'setDepth', 'args':{'depth':Math.round(shark_velocity.depth)}}));
+	socket.emit('setDepth', Math.round(shark_velocity.depth));
+ // ws.send(JSON.stringify({'fn': 'setDepth', 'args':{'depth':Math.round(shark_velocity.depth)}}));
 };
 var sendDirection = function() {
-  ws.send(JSON.stringify({'fn': 'setDirection', 'args':{'direction':Math.round(shark_velocity.direction)}}));
+	socket.emit('setDirection', Math.round(shark_velocity.direction));
+//  ws.send(JSON.stringify({'fn': 'setDirection', 'args':{'direction':Math.round(shark_velocity.direction)}}));
 };
 
 
@@ -34,11 +43,11 @@ ws.onopen = function (event) {
     var dir = eventData.alpha;
 
     // call our orientation event handler
-    if (Math.abs(Math.round(shark_velocity.direction) - last_direction) > .6) {
+    if (Math.abs(Math.round(shark_velocity.direction) - last_direction)) {
       sendDirection();
       last_direction = Math.round(shark_velocity.direction);
     }
-    if (Math.abs(Math.round(shark_velocity.depth) - last_depth) > .6) {
+    if (Math.abs(Math.round(shark_velocity.depth) - last_depth)) {
       sendDepth();
       last_depth = Math.round(shark_velocity.depth);
     }
@@ -48,7 +57,6 @@ ws.onopen = function (event) {
   }, false);
 
 };
-      
 
 if (window.DeviceOrientationEvent) {
     console.log("DeviceOrientation is supported");

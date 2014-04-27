@@ -10,9 +10,10 @@
   </form> 
 <script>
 
-var socket = io.connect('http://10.0.1.169:3001');
+var socket = io.connect('http://10.0.1.169:9000');
 var form = document.getElementById('joinRoom');
 var input = document.getElementById('room-id');
+var index = null;
 socket.on('updateScore', function() {
 		// do shit
 });
@@ -40,31 +41,31 @@ var sendDirection = function() {
 };
 
 
-  window.addEventListener('deviceorientation', function(eventData) {
-    // gamma is the left-to-right tilt in degrees, where right is positive
-    shark_velocity.depth = eventData.gamma/180;
-    // between -1 and 1
+window.addEventListener('deviceorientation', function(eventData) {
+  // gamma is the left-to-right tilt in degrees, where right is positive
+  shark_velocity.depth = eventData.gamma/180;
+  // between -1 and 1
 
-    // beta is the front-to-back tilt in degrees, where front is positive
-    shark_velocity.direction = eventData.beta/90;
-    // also between -1 and 1
+  // beta is the front-to-back tilt in degrees, where front is positive
+  shark_velocity.direction = eventData.beta/90;
+  // also between -1 and 1
 
-    // alpha is the compass direction the device is facing in degrees
-    var dir = eventData.alpha;
+  // alpha is the compass direction the device is facing in degrees
+  var dir = eventData.alpha;
 
-    // call our orientation event handler
-    if (Math.abs(Math.round(shark_velocity.direction) - last_direction)) {
-      sendDirection();
-      last_direction = Math.round(shark_velocity.direction);
-    }
-    if (Math.abs(Math.round(shark_velocity.depth) - last_depth)) {
-      sendDepth();
-      last_depth = Math.round(shark_velocity.depth);
-    }
+  // call our orientation event handler
+  if (Math.abs(Math.round(shark_velocity.direction) - last_direction)) {
+    sendDirection();
+    last_direction = Math.round(shark_velocity.direction);
+  }
+  if (Math.abs(Math.round(shark_velocity.depth) - last_depth)) {
+    sendDepth();
+    last_depth = Math.round(shark_velocity.depth);
+  }
 
-    document.getElementById("vel").textContent = "dir: " + shark_velocity.direction.toString() + " dep: " + shark_velocity.depth.toString();
+  document.getElementById("vel").textContent = "dir: " + shark_velocity.direction.toString() + " dep: " + shark_velocity.depth.toString();
 
-  }, false);
+}, false);
 
 
 if (window.DeviceOrientationEvent) {

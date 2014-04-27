@@ -18,12 +18,10 @@ socket.on('updateScore', function() {
 });
 form.addEventListener("submit", function(e) {
   console.log(input.value);
-  //socket.emit('joinRoom', 'controller', input.value);
-  /*
+  socket.emit('joinRoom', 'controller', input.value);
   socket.on('notifyRoomID', function(id) {
     console.log("connected");
   });
-  */
   e.preventDefault();
   return false;
 });

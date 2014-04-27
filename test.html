@@ -4,16 +4,33 @@
 </head>
 <body>
   <div id="vel"> </div>
+  <form id='joinRoom'>
+  <input id="room-id" type='text' name="name">
+  <input id='button' type='submit' name='submit'>
+  </form> 
 <script>
 
-	var socket = io.connect('http://10.0.1.169:3001');
+var socket = io.connect('http://10.0.1.169:3001');
+var form = document.getElementById('joinRoom');
+var input = document.getElementById('room-id');
+
+	
 	socket.on('connection', function(socket) {
 		socket.on('updateScore', function() {
 			// do shit
 		});
-	});
-	socket.emit('joinRoom', 'controller', 'id8n');
-	socket.emit('setDepth', '1.0');
+    form.addEventListener("submit", function(e) {
+      console.log(input.value);
+      socket.emit('joinRoom', 'controller', input.value);
+      socket.on('notifyRoomID', function(id) {
+        console.log("connected");
+      });
+    e.preventDefault();
+    return false;
+  });
+
+});
+
 var shark_velocity = {'direction':0, 'depth':0};
 
 var last_direction = 0;
@@ -60,7 +77,6 @@ if (window.DeviceOrientationEvent) {
 
 
 // Listen for the deviceorientation event and handle the raw data
-
     </script>
 </body>
 </html>

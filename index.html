@@ -146,7 +146,7 @@
       var socket;
 
       var connectSocket = function() {
-        socket = io.connect('http://10.0.3.138:9000', {
+        socket = io.connect('http://rl.io:9000', {
           'reconnection delay': 400,
           'max reconnection attempts': 10
         });
@@ -154,12 +154,10 @@
       connectSocket();
 
       var joinRoom = function(nameValue, idValue) {
-        socket.emit('joinRoom', 'controller', nameValue, idValue, hopefullyUniqueId);
+        socket.emit('joinRoom', 'controller', nameValue, idValue);
       };
 
       navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
-
-      var hopefullyUniqueId = Math.random();
 
       var vibratePhone = function(duration) {
         if (navigator.vibrate) {

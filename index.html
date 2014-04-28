@@ -1,4 +1,4 @@
-<!doctype html>
+<doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -108,7 +108,8 @@
         document.getElementById('waitName'),
         document.getElementById('playName')
       ]
-
+      
+      var betaCheck = false;
       var shark = {
         direction: 0,
         depth: 0,
@@ -221,7 +222,7 @@
                   if (betaCheck) {
                     var betaDist = Math.abs(oldBeta - beta);
                     if (betaDist > 70 && betaDist < 110) {
-                      socket.emit('notifyChomp');
+                      socket.emit('notifyChomp',true);
                     }
                     oldBeta = beta;
                     betaCheck = false;

@@ -9,15 +9,6 @@
 
   <title>Sharky Shark Controller</title>
   <style>
-    * {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none;
-    }
     html, body {
       height: 100%;
     }
@@ -50,6 +41,15 @@
       line-height: 150px;
       margin: 0;
       font-size: 48px;
+    }
+    #playScreen * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
     }
     #playScreen p {
       display: none;
@@ -272,26 +272,32 @@
 
                 playScreen.addEventListener('mousedown', function() {
                   playScreen.className = 'touchdown';
+                  console.log('oops');
                   touchdown = true;
                 }, false);
                 playScreen.addEventListener('touchstart', function() {
                   playScreen.className = 'touchdown';
+                  console.log('oops');
                   touchdown = true;
                 }, false);
                 playScreen.addEventListener('pointerdown', function() {
                   playScreen.className = 'touchdown';
+                  console.log('oops');
                   touchdown = true;
                 }, false);
                 playScreen.addEventListener('mouseup', function() {
                   playScreen.className = 'touchup';
+                  console.log('oops');
                   touchdown = false;
                 }, false);
                 playScreen.addEventListener('touchend', function() {
                   playScreen.className = 'touchup';
+                  console.log('oops');
                   touchdown = false;
                 }, false);
                 playScreen.addEventListener('pointerup', function() {
                   playScreen.className = 'touchup';
+                  console.log('oops');
                   touchdown = false;
                 }, false);
               }

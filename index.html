@@ -102,7 +102,7 @@
   </div>
 
   <div class="touchup" id="playScreen">
-    <p class="thumbMessage">Put your thumb on the screen and tilt to control</p>
+    <p class="thumbMessage">Tilt to move, tap to chomp!</p>
     <p id="playName"></p>
     <p id="playScore">0</p>
   </div>
@@ -141,9 +141,6 @@
         document.getElementById('waitName'),
         document.getElementById('playName')
       ];
-
-      var touchdown = false;
-      var betaCheck = false;
 
       var shark = {
         direction: 0,
@@ -193,14 +190,10 @@
         measurement = bounded(measurement, maxDegrees) / maxDegrees;
 
         // only sends if their thumb is on the device
-        if (Math.abs(measurement - shark[metric]) >= latch && touchdown) {
+        if (Math.abs(measurement - shark[metric]) >= latch) {
           shark[metric] = measurement;
           socket.emit(fn, measurement);
         }
-      }
-
-      function chompCheck() {
-        betaCheck = true;
       }
 
       // so hack...
@@ -260,6 +253,28 @@
                   latchCheck(beta, 'direction', 'setDirection');
 
                 }, false);
+
+                playScreen.addEventListener('mousedown', function() {
+                  playScreen.className = 'touchdown';
+                  socket.emit('chomp');
+                }, false);
+                playScreen.addEventListener('touchstart', function() {
+                  playScreen.className = 'touchdown';
+                  socket.emit('chomp');
+                }, false);
+                playScreen.addEventListener('pointerdown', function() {
+                  playScreen.className = 'touchdown';
+                  socket.emit('chomp');
+                }, false);
+                playScreen.addEventListener('mouseup', function() {
+                  playScreen.className = 'touchup';
+                }, false);
+                playScreen.addEventListener('touchend', function() {
+                  playScreen.className = 'touchup';
+                }, false);
+                playScreen.addEventListener('pointerup', function() {
+                  playScreen.className = 'touchup';
+                }, false);
               }
             });
           }
@@ -272,38 +287,6 @@
       socket.on('disconnect', function() {
         console.log('You disconnected you dummy..');
       });
-
-      playScreen.addEventListener('mousedown', function() {
-        playScreen.className = 'touchdown';
-        console.log('oops');
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('touchstart', function() {
-        playScreen.className = 'touchdown';
-        console.log('oops');
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('pointerdown', function() {
-        playScreen.className = 'touchdown';
-        console.log('oops');
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('mouseup', function() {
-        playScreen.className = 'touchup';
-        console.log('oops');
-        touchdown = false;
-      }, false);
-      playScreen.addEventListener('touchend', function() {
-        playScreen.className = 'touchup';
-        console.log('oops');
-        touchdown = false;
-      }, false);
-      playScreen.addEventListener('pointerup', function() {
-        playScreen.className = 'touchup';
-        console.log('oops');
-        touchdown = false;
-      }, false);
-
     })(this);
   </script>
 

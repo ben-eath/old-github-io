@@ -14,6 +14,8 @@
     }
     body {
       position: relative;
+      color: white;
+      background: #03a;
     }
     input, button {
       display: block;
@@ -21,7 +23,7 @@
       max-width: 240px;
       margin: .6em auto 1em;
       padding: .2em;
-      border: 1px solid black;
+      border: 1px solid #888;
       outline: 0;
       text-transform: uppercase;
       text-align: center;
@@ -35,6 +37,7 @@
       padding: .4em;
       border-radius: 10%/50%;
       cursor: pointer;
+      background: #fff;
     }
     p {
       height: 150px;
@@ -61,10 +64,8 @@
     }
     body>div {
       position: absolute;
-      top: 50%; left: 0; right: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       display: none;
-      height: 300px;
-      margin-top: -150px;
       font-family: VT323, monospace;
       -moz-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%;
@@ -72,10 +73,38 @@
       text-size-adjust: 100%;
       text-align: center;
     }
+    .inner {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 300px;
+      margin-top: -150px;
+    }
     .lobbyScreen #lobbyScreen,
     .waitScreen #waitScreen,
     .playScreen #playScreen {
       display: block;
+    }
+
+    #waitScreen {
+      z-index: 100;
+      top: 50%;
+      height: 180px;
+      left: 10%;
+      right: 10%;
+      margin-top: -90px;
+      border: 2px solid black;
+      background: white;
+      box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.8);
+    }
+    #waitScreen h1 {
+      height: 90px;
+      line-height: 90px;
+      font-size: 36px;
+      color: black;
+    }
+    #waitScreen span {
+      display: block;
+      font-size: 18px;
     }
     .waiting #button {
       /* load animation, if we have time */
@@ -87,24 +116,26 @@
 <body class="lobbyScreen">
 
   <div id="lobbyScreen">
-    <h1>Ben Eath: the Surf Ace</h1>
-    <form id="joinRoom">
-      <input id="playerName" type="text" name="playerName" placeholder="name">
-      <input id="roomId" type="text" name="roomId" placeholder="Room ID">
-      <button id="button" type="submit" name="submit">Surf's up!</button>
-    </form>
+    <div class="inner">
+      <h1>Ben Eath: the Surf Ace</h1>
+      <form id="joinRoom">
+        <input id="playerName" type="text" name="playerName" placeholder="name">
+        <input id="roomId" type="text" name="roomId" placeholder="Room ID">
+        <button id="button" type="submit" name="submit">Surf's up!</button>
+      </form>
+    </div>
   </div>
 
   <div id="waitScreen">
-    <h1>Please wait</h1>
-    <p id="waitName"></p>
-    <p id="waitScore">0</p>
+    <h1>Waiting <span id="waitReason"></span></h1>
   </div>
 
   <div class="touchup" id="playScreen">
-    <p class="thumbMessage">Tilt to move, tap to chomp!</p>
-    <p id="playName"></p>
-    <p id="playScore">0</p>
+    <div class="inner">
+      <p class="thumbMessage">Tilt to move, tap to chomp!</p>
+      <p id="playName"></p>
+      <p id="playScore">0</p>
+    </div>
   </div>
 
   <script src="socket.io.js"></script>
@@ -134,11 +165,9 @@
       var roomId = document.getElementById('roomId');
       var playScreen = document.getElementById('playScreen');
       var scores = [
-        document.getElementById('waitScore'),
         document.getElementById('playScore')
       ];
       var names = [
-        document.getElementById('waitName'),
         document.getElementById('playName')
       ];
 
@@ -188,7 +217,6 @@
       function latchCheck(measurement, metric, fn) {
         // normalize to [-1, 1]
         measurement = bounded(measurement, maxDegrees) / maxDegrees;
-
         // only sends if their thumb is on the device
         if (Math.abs(measurement - shark[metric]) >= latch) {
           shark[metric] = measurement;
@@ -239,8 +267,8 @@
                 });
 
                 // Add other socket listeners here (blood, etc)
-
                 global.addEventListener('deviceorientation', function(eventData) {
+                  console.log('hi');
                   // gamma: left-to-right tilt, right is positive;
                   // handles depth, -90deg to 90deg
                   var gamma = eventData.gamma;

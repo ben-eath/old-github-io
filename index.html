@@ -270,6 +270,30 @@
                 }, false);
                 setInterval(chompCheck, 80);
 
+                playScreen.addEventListener('mousedown', function() {
+                  playScreen.className = 'touchdown';
+                  touchdown = true;
+                }, false);
+                playScreen.addEventListener('touchstart', function() {
+                  playScreen.className = 'touchdown';
+                  touchdown = true;
+                }, false);
+                playScreen.addEventListener('pointerdown', function() {
+                  playScreen.className = 'touchdown';
+                  touchdown = true;
+                }, false);
+                playScreen.addEventListener('mouseup', function() {
+                  playScreen.className = 'touchup';
+                  touchdown = false;
+                }, false);
+                playScreen.addEventListener('touchend', function() {
+                  playScreen.className = 'touchup';
+                  touchdown = false;
+                }, false);
+                playScreen.addEventListener('pointerup', function() {
+                  playScreen.className = 'touchup';
+                  touchdown = false;
+                }, false);
               }
             });
           }
@@ -282,31 +306,6 @@
       socket.on('disconnect', function() {
         console.log('You disconnected you dummy..');
       });
-
-      playScreen.addEventListener('mousedown', function() {
-        playScreen.className = 'touchdown';
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('touchstart', function() {
-        playScreen.className = 'touchdown';
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('pointerdown', function() {
-        playScreen.className = 'touchdown';
-        touchdown = true;
-      }, false);
-      playScreen.addEventListener('mouseup', function() {
-        playScreen.className = 'touchup';
-        touchdown = false;
-      }, false);
-      playScreen.addEventListener('touchend', function() {
-        playScreen.className = 'touchup';
-        touchdown = false;
-      }, false);
-      playScreen.addEventListener('pointerup', function() {
-        playScreen.className = 'touchup';
-        touchdown = false;
-      }, false);
 
     })(this);
   </script>

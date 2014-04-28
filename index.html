@@ -9,6 +9,18 @@
 
   <title>Sharky Shark Controller</title>
   <style>
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+    html, body {
+      height: 100%;
+    }
     body {
       position: relative;
     }
@@ -17,10 +29,12 @@
       width: 80%;
       max-width: 240px;
       margin: .6em auto 1em;
+      padding: .2em;
       border: 1px solid black;
+      outline: 0;
       text-transform: uppercase;
       text-align: center;
-      font-size: 36px;
+      font-size: 24px;
       font-family: VT323, monospace;
     }
     #joinRoom {
@@ -28,12 +42,29 @@
     }
     button {
       padding: .4em;
-      border-radius: 16%/50%;
+      border-radius: 10%/50%;
+      cursor: pointer;
     }
-    .screen {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+    p {
+      height: 150px;
+      line-height: 150px;
+      margin: 0;
+      font-size: 48px;
+    }
+    #playScreen p {
       display: none;
+    }
+    #playScreen.touchdown #playName,
+    #playScreen.touchdown #playScore,
+    #playScreen.touchup .thumbMessage {
+      display: block;
+    }
+    body > div {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      display: none;
+      height: 300px;
+      margin-top: -150px;
       font-family: VT323, monospace;
       -moz-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%;
@@ -53,9 +84,9 @@
   <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
 </head>
 
-<body class="lobbyScreen">
+<body class="playScreen">
 
-  <div class="screen" id="lobbyScreen">
+  <div id="lobbyScreen">
     <h1>Ben Eath: the Surf Ace</h1>
     <form id="joinRoom">
       <input id="playerName" type="text" name="playerName" placeholder="name">
@@ -64,15 +95,16 @@
     </form>
   </div>
 
-  <div class="screen" id="waitScreen">
+  <div id="waitScreen">
     <h1>Please wait</h1>
     <p id="waitName"></p>
-    <p id="waitScore"></p>
+    <p id="waitScore">0</p>
   </div>
 
-  <div class="screen" id="playScreen">
+  <div class="touchup" id="playScreen">
+    <p class="thumbMessage">Put your thumb on the screen and tilt to control</p>
     <p id="playName"></p>
-    <p id="playScore"></p>
+    <p id="playScore">0</p>
   </div>
 
   <script src="socket.io.js"></script>
@@ -80,7 +112,7 @@
   <script>
     // This entire thing seriously needs some (refactoring)
     ;(function(global) {
-      var socket = io.connect('http://128.199.252.50:9000', {
+      var socket = io.connect('http://10.0.3.138:9000', {
         'reconnection delay': 100,
         'max reconnection attempts': Infinity
       });
@@ -100,6 +132,7 @@
       var form = document.getElementById('joinRoom');
       var playerName = document.getElementById('playerName');
       var roomId = document.getElementById('roomId');
+      var playScreen = document.getElementById('playScreen');
       var scores = [
         document.getElementById('waitScore'),
         document.getElementById('playScore')
@@ -107,7 +140,9 @@
       var names = [
         document.getElementById('waitName'),
         document.getElementById('playName')
-      ]
+      ];
+
+      var touchdown = false;
 
       var shark = {
         direction: 0,
@@ -156,7 +191,8 @@
         // normalize to [-1, 1]
         measurement = bounded(measurement, maxDegrees) / maxDegrees;
 
-        if (Math.abs(measurement - shark[metric]) >= latch) {
+        // only sends if their thumb is on the device
+        if (Math.abs(measurement - shark[metric]) >= latch && touchdown) {
           shark[metric] = measurement;
           socket.emit(fn, measurement);
         }
@@ -231,6 +267,30 @@
         console.log('You disconnected you dummy..');
       });
 
+      playScreen.addEventListener('mousedown', function() {
+        playScreen.className = 'touchdown';
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('touchstart', function() {
+        playScreen.className = 'touchdown';
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('pointerdown', function() {
+        playScreen.className = 'touchdown';
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('mouseup', function() {
+        playScreen.className = 'touchup';
+        touchdown = false;
+      }, false);
+      playScreen.addEventListener('touchend', function() {
+        playScreen.className = 'touchup';
+        touchdown = false;
+      }, false);
+      playScreen.addEventListener('pointerup', function() {
+        playScreen.className = 'touchup';
+        touchdown = false;
+      }, false);
 
     })(this);
   </script>

@@ -255,51 +255,11 @@
                   // handles direction, -90deg to 90deg
                   var beta = eventData.beta;
 
-                  if (betaCheck) {
-                    var betaDist = Math.abs(oldBeta - beta);
-                    if (betaDist > 70 && betaDist < 110) {
-                      socket.emit('notifyChomp',true);
-                    }
-                    oldBeta = beta;
-                    betaCheck = false;
-                  }
-
                   latchCheck(gamma, 'depth', 'setDepth');
                   latchCheck(beta, 'direction', 'setDirection');
 
                 }, false);
                 setInterval(chompCheck, 80);
-
-                playScreen.addEventListener('mousedown', function() {
-                  playScreen.className = 'touchdown';
-                  console.log('oops');
-                  touchdown = true;
-                }, false);
-                playScreen.addEventListener('touchstart', function() {
-                  playScreen.className = 'touchdown';
-                  console.log('oops');
-                  touchdown = true;
-                }, false);
-                playScreen.addEventListener('pointerdown', function() {
-                  playScreen.className = 'touchdown';
-                  console.log('oops');
-                  touchdown = true;
-                }, false);
-                playScreen.addEventListener('mouseup', function() {
-                  playScreen.className = 'touchup';
-                  console.log('oops');
-                  touchdown = false;
-                }, false);
-                playScreen.addEventListener('touchend', function() {
-                  playScreen.className = 'touchup';
-                  console.log('oops');
-                  touchdown = false;
-                }, false);
-                playScreen.addEventListener('pointerup', function() {
-                  playScreen.className = 'touchup';
-                  console.log('oops');
-                  touchdown = false;
-                }, false);
               }
             });
           }
@@ -312,6 +272,37 @@
       socket.on('disconnect', function() {
         console.log('You disconnected you dummy..');
       });
+
+      playScreen.addEventListener('mousedown', function() {
+        playScreen.className = 'touchdown';
+        console.log('oops');
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('touchstart', function() {
+        playScreen.className = 'touchdown';
+        console.log('oops');
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('pointerdown', function() {
+        playScreen.className = 'touchdown';
+        console.log('oops');
+        touchdown = true;
+      }, false);
+      playScreen.addEventListener('mouseup', function() {
+        playScreen.className = 'touchup';
+        console.log('oops');
+        touchdown = false;
+      }, false);
+      playScreen.addEventListener('touchend', function() {
+        playScreen.className = 'touchup';
+        console.log('oops');
+        touchdown = false;
+      }, false);
+      playScreen.addEventListener('pointerup', function() {
+        playScreen.className = 'touchup';
+        console.log('oops');
+        touchdown = false;
+      }, false);
 
     })(this);
   </script>

@@ -161,6 +161,10 @@
           socket.emit(fn, measurement);
         }
       }
+      
+      function chompCheck() {
+        betaCheck = true;
+      }
 
       // so hack...
       var formClicked = false;
@@ -213,11 +217,22 @@
                   // beta: front-to-back tilt, front is positive;
                   // handles direction, -90deg to 90deg
                   var beta = eventData.beta;
+                  
+                  if (betaCheck) {
+                    var betaDist = Math.abs(oldBeta - beta);
+                    if (betaDist > 70 && betaDist < 110) {
+                      socket.emit('notifyChomp');
+                    }
+                    oldBeta = beta;
+                    betaCheck = false;
+                  }
 
                   latchCheck(gamma, 'depth', 'setDepth');
                   latchCheck(beta, 'direction', 'setDirection');
-
+                  
                 }, false);
+                setInterval(chompCheck, 80);
+                
               }
             });
           }

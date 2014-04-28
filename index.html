@@ -221,6 +221,7 @@
             socket.on('verifyRoom', function(roomExists, index) {
               if(roomExists) {
                 changeScreen('wait');
+                changeScreen('play');
                 body.style.backgroundColor = playerColors[index];
                 names.forEach(function(el) {
                   el.textContent = nameValue;
@@ -259,7 +260,6 @@
                   latchCheck(beta, 'direction', 'setDirection');
 
                 }, false);
-                setInterval(chompCheck, 80);
               }
             });
           }
